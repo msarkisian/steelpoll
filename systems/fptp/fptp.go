@@ -1,12 +1,27 @@
-package fpt
+package fptp
 
 import (
 	"errors"
 )
 
+// TODO:
+// gracefully handle/deny changing votes
+// handle ties
+
 type Poll[C comparable, V comparable] struct {
 	Candidates map[C]struct{}
 	Votes      map[V]C
+}
+
+func New[C comparable, V comparable](candidates []C) Poll[C, V] {
+	poll := Poll[C, V]{
+		Candidates: make(map[C]struct{}),
+		Votes:      make(map[V]C),
+	}
+	for _, c := range candidates {
+		poll.Candidates[c] = struct{}{}
+	}
+	return poll
 }
 
 func (p Poll[C, V]) CastVote(candidate C, voter V) error {
