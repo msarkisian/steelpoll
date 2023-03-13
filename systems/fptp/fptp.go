@@ -4,34 +4,34 @@ import (
 	"errors"
 )
 
-type Poll[C comparable, V comparable] struct {
-	Candidates map[C]struct{}
-	Votes      map[V]C
+type poll[C comparable, V comparable] struct {
+	candidates map[C]struct{}
+	votes      map[V]C
 }
 
-func New[C comparable, V comparable](candidates []C) Poll[C, V] {
-	poll := Poll[C, V]{
-		Candidates: make(map[C]struct{}),
-		Votes:      make(map[V]C),
+func New[C comparable, V comparable](candidates []C) poll[C, V] {
+	poll := poll[C, V]{
+		candidates: make(map[C]struct{}),
+		votes:      make(map[V]C),
 	}
 	for _, c := range candidates {
-		poll.Candidates[c] = struct{}{}
+		poll.candidates[c] = struct{}{}
 	}
 	return poll
 }
 
-func (p Poll[C, V]) CastVote(candidate C, voter V) error {
-	_, ok := p.Candidates[candidate]
+func (p poll[C, V]) CastVote(candidate C, voter V) error {
+	_, ok := p.candidates[candidate]
 	if !ok {
 		return errors.New("tried to vote for nonexistant candidate")
 	}
-	p.Votes[voter] = candidate
+	p.votes[voter] = candidate
 	return nil
 }
 
-func (p Poll[C, V]) Tally() map[C]float64 {
-	voteCounts := make(map[C]int, len(p.Candidates))
-	for _, c := range p.Votes {
+func (p poll[C, V]) Tally() map[C]float64 {
+	voteCounts := make(map[C]int, len(p.candidates))
+	for _, c := range p.votes {
 		voteCounts[c] += 1
 	}
 
