@@ -1,7 +1,7 @@
 package fptp
 
 import (
-	"errors"
+	"fmt"
 )
 
 type poll[C comparable, V comparable] struct {
@@ -23,7 +23,7 @@ func New[C comparable, V comparable](candidates []C) poll[C, V] {
 func (p poll[C, V]) CastVote(candidate C, voter V) error {
 	_, ok := p.candidates[candidate]
 	if !ok {
-		return errors.New("tried to vote for nonexistant candidate")
+		return fmt.Errorf("tried to vote for nonexistant candidate: %v", candidate)
 	}
 	p.votes[voter] = candidate
 	return nil
