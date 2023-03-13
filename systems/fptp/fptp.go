@@ -4,10 +4,6 @@ import (
 	"errors"
 )
 
-// TODO:
-// gracefully handle/deny changing votes
-// handle ties
-
 type Poll[C comparable, V comparable] struct {
 	Candidates map[C]struct{}
 	Votes      map[V]C
@@ -34,23 +30,30 @@ func (p Poll[C, V]) CastVote(candidate C, voter V) error {
 }
 
 func (p Poll[C, V]) Tally() map[C]float64 {
-	maxVoteCount := 0
-	var leader *C = nil
 	voteCounts := make(map[C]int, len(p.Candidates))
 	for _, c := range p.Votes {
 		voteCounts[c] += 1
-		if voteCounts[c] > maxVoteCount {
-			maxVoteCount = voteCounts[c]
-			leader = &c
+	}
+
+	max := 0
+	winners := []C{}
+
+	for c, s := range voteCounts {
+		switch {
+		case s > max:
+			max = s
+			winners = []C{c}
+		case s == max:
+			winners = append(winners, c)
 		}
 	}
+
 	ret := make(map[C]float64, len(voteCounts))
 	for c := range voteCounts {
-		if c == *leader {
-			ret[c] = 100
-		} else {
-			ret[c] = 0
-		}
+		ret[c] = 0
+	}
+	for _, w := range winners {
+		ret[w] = 100 / float64((len(winners)))
 	}
 	return ret
 }
