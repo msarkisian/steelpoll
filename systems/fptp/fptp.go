@@ -21,8 +21,7 @@ func New[C comparable, V comparable](candidates []C) poll[C, V] {
 }
 
 func (p poll[C, V]) CastVote(candidate C, voter V) error {
-	_, ok := p.candidates[candidate]
-	if !ok {
+	if _, ok := p.candidates[candidate]; !ok {
 		return fmt.Errorf("tried to vote for nonexistant candidate: %v", candidate)
 	}
 	p.votes[voter] = candidate
